@@ -42,6 +42,16 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+        public void DisableWalking()
+        {
+            m_WalkSpeed = 0f;
+        }
+
+        public void SetWalkSpeed(float s)
+        {
+            m_WalkSpeed = s;
+        }
+
         // Use this for initialization
         private void Start()
         {
