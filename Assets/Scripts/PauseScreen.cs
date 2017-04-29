@@ -30,7 +30,9 @@ public class PauseScreen : MonoBehaviour {
         {
             if (resetOnKey)
             {
-                SceneManager.LoadScene("MainRoom");
+                Debug.Log("Restarting Scene");
+                CameraFade.SetScreenOverlayColor(Color.black);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
             else
             {

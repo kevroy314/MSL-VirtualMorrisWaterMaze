@@ -18,6 +18,7 @@ public class InputValidator : MonoBehaviour {
             subIDInputField.text = PlayerPrefs.GetString("subid").Trim();
         if (PlayerPrefs.HasKey("trial"))
             trialDropdown.value = PlayerPrefs.GetInt("trial");
+        PlayerPrefs.SetInt("iteration", 0);
         Configuration config = LoadConfiguration();
         trialDropdown.ClearOptions();
         trialDropdown.AddOptions(new List<string>(config.TrialStrings));
@@ -45,7 +46,7 @@ public class InputValidator : MonoBehaviour {
         int trial = trialDropdown.value;
 
         Setup(subID, trial);
-
+        CameraFade.SetScreenOverlayColor(Color.black);
         SceneManager.LoadScene("MainRoom");
     }
 

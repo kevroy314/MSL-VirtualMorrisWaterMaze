@@ -17,6 +17,7 @@ public class TrialConfigurationLoader : MonoBehaviour {
     public GameObject elevator;
     public GameObject flags;
     public GameObject hills;
+    public TrialTimer timer;
 
     // Use this for initialization
     void Start () {
@@ -46,6 +47,16 @@ public class TrialConfigurationLoader : MonoBehaviour {
 	
 	private void Initialize(Configuration c)
     {
+        int numberOfExecutions = c.NumberOfExecutions[trial];
+        Debug.Log(iteration);
+        Debug.Log(numberOfExecutions);
+        if (iteration >= numberOfExecutions)
+        {
+            PlayerPrefs.SetInt("iteration", 0);
+            CameraFade.SetScreenOverlayColor(Color.black);
+            SceneManager.LoadScene("Menu");
+            return;
+        }
 
         platform.transform.position = new Vector3(c.PlatformPositions[trial][iteration].x, platform.transform.position.y, c.PlatformPositions[trial][iteration].y);
         player.transform.position = new Vector3(c.PlayerStartPositions[trial][iteration].x, player.transform.position.y, c.PlayerStartPositions[trial][iteration].y);
@@ -57,18 +68,14 @@ public class TrialConfigurationLoader : MonoBehaviour {
             orderedLandmarks[i].SetActive(c.LandmarkVisibilities[trial]);
 
         if (c.PlatformVisibilities[trial])
-            elevator.transform.position = new Vector3(elevator.transform.position.x, -1.0f, elevator.transform.position.z);
+            elevator.transform.position = new Vector3(elevator.transform.position.x, -1.2f, elevator.transform.position.z);
 
         flags.SetActive(c.FlagVisibilities[trial]);
         platformTrigger.SetActive(c.PlatformTriggerEnabled[trial]);
         hills.SetActive(c.HillVisibilities[trial]);
 
-        int numberOfExecutions = c.NumberOfExecutions[trial];
-        if(iteration >= numberOfExecutions)
-        {
-            PlayerPrefs.SetInt("iteration", 0);
-            SceneManager.LoadScene("Menu");
-        }
+        timer.trialTime = c.TrialTimeLimits[trial];
+
         player.GetComponentInChildren<AudioListener>().enabled = c.SoundEffectsEnabled[trial];
 
         player.GetComponent<FirstPersonController>().SetWalkSpeed(c.MovementSpeeds[trial]);

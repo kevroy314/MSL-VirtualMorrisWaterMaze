@@ -83,9 +83,9 @@ public class Configuration : System.Object {
                 if (platformPositionStr != "")
                 {
                     string[] split = platformPositionStr.Split(new char[] { ',' });
-                    for (int j = 0; j < Math.Floor((float)split.Length / 2f); j += 2)
-                        if (j < NumberOfExecutions[i])
-                            platformPositions[i][j] = ParseVector2(split[j] + ',' + split[j + 1]);
+                    for (int j = 0; j < Math.Floor((float)split.Length / 2f) * 2f; j += 2)
+                        if (j < NumberOfExecutions[i] * 2)
+                            platformPositions[i][j / 2] = ParseVector2(split[j] + ',' + split[j + 1]);
                 }
 
                 //Populate the player start position if specified (zeros default)
@@ -93,9 +93,9 @@ public class Configuration : System.Object {
                 if (playerStartPositionStr != "")
                 {
                     string[] split = playerStartPositionStr.Split(new char[] { ',' });
-                    for (int j = 0; j < Math.Floor((float)split.Length / 2f); j += 2)
-                        if (j < NumberOfExecutions[i])
-                            playerStartPositions[i][j] = ParseVector2(split[j] + ',' + split[j + 1]);
+                    for (int j = 0; j < Math.Floor((float)split.Length / 2f) * 2f; j += 2)
+                        if (j < NumberOfExecutions[i] * 2)
+                            playerStartPositions[i][j / 2] = ParseVector2(split[j] + ',' + split[j + 1]);
                 }
 
                 //Populate the player starting orientation if specified

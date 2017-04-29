@@ -28,16 +28,19 @@ public class TrialTimer : MonoBehaviour {
 
             elapsed = (currentTime - startTime) - pauseTime;
             if (elapsed > trialTime)
-            {
-                pause.pauseText = "End of Trial\r\nPress Space To Continue";
-                pause.Pause = true;
-                pause.pauseKey = KeyCode.Space;
-                done = true;
-                configLoader.NextIteration();
-                pause.resetOnKey = true;
-            }
+                EndTrial();
 
             prevTime = currentTime;
         }
 	}
+
+    public void EndTrial()
+    {
+        pause.pauseText = "End of Trial\r\nPress Space To Continue";
+        pause.Pause = true;
+        pause.pauseKey = KeyCode.Space;
+        done = true;
+        configLoader.NextIteration();
+        pause.resetOnKey = true;
+    }
 }
