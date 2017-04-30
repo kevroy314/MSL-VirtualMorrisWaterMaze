@@ -48,8 +48,8 @@ public class TrialConfigurationLoader : MonoBehaviour {
 	private void Initialize(Configuration c)
     {
         int numberOfExecutions = c.NumberOfExecutions[trial];
-        Debug.Log(iteration);
-        Debug.Log(numberOfExecutions);
+        //Debug.Log(iteration);
+        //Debug.Log(numberOfExecutions);
         if (iteration >= numberOfExecutions)
         {
             PlayerPrefs.SetInt("iteration", 0);

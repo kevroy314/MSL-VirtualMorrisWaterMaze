@@ -11,6 +11,7 @@ public class InputValidator : MonoBehaviour {
     public Dropdown trialDropdown;
     public string config_filepath = "configuration.ini";
     public bool relativePath = true;
+    public GameObject tcpServer;
 
     void Start()
     {
@@ -22,6 +23,9 @@ public class InputValidator : MonoBehaviour {
         Configuration config = LoadConfiguration();
         trialDropdown.ClearOptions();
         trialDropdown.AddOptions(new List<string>(config.TrialStrings));
+
+        if (config.EnableTCP && tcpServer != null)
+            tcpServer.SetActive(true);
     }
 
     public Configuration LoadConfiguration()

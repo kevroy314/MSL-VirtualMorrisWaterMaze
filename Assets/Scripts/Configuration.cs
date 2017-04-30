@@ -53,6 +53,10 @@ public class Configuration : System.Object {
             string trialStr = parser.ReadValue("Global", "TrialStrings", "Practice - Flags,Practice - Hills,Practice - Visible Platform,Trial 1,Trial 2-5,Trial 6-10,Trial 11-15,Probe Trial");
             TrialStrings = trialStr.Split(new char[] { ',' });
 
+            //Read the global settings
+
+            enableTCP = parser.ReadValue("Global", "EnableTCP", 0) != 0;
+
             //Popualte the data arrays with defaults
             int n = TrialStrings.Length;
 
@@ -195,6 +199,8 @@ public class Configuration : System.Object {
             MovementSpeeds[i] = 5f;
         }
     }
+
+    private bool enableTCP;
 
     private string[] trialStrings;
 
@@ -380,6 +386,19 @@ public class Configuration : System.Object {
         set
         {
             movementSpeeds = value;
+        }
+    }
+
+    public bool EnableTCP
+    {
+        get
+        {
+            return enableTCP;
+        }
+
+        set
+        {
+            enableTCP = value;
         }
     }
 }
