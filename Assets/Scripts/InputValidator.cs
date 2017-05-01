@@ -25,7 +25,11 @@ public class InputValidator : MonoBehaviour {
         trialDropdown.AddOptions(new List<string>(config.TrialStrings));
 
         if (config.EnableTCP && tcpServer != null)
+        {
             tcpServer.SetActive(true);
+            tcpServer.GetComponent<AsynchronousSocketListener>().port = config.Port;
+            tcpServer.GetComponent<AsynchronousSocketListener>().frame_protocol = (AsynchronousSocketListener.FrameTransmissionProtocol)config.FrameMode;
+        }
     }
 
     public Configuration LoadConfiguration()

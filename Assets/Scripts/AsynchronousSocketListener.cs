@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WindowsInput;
 
 // State object for reading client data asynchronously  
 public class StateObject
@@ -28,9 +29,9 @@ public class AsynchronousSocketListener : MonoBehaviour
     public enum FrameTransmissionProtocol { Continuous, AsReply, OnRequest }
 
     private int incomingBufferSize = 1024;
-    private int port = 5005;
-    private string endToken = "<EOF>";
-    private FrameTransmissionProtocol frame_protocol = FrameTransmissionProtocol.AsReply;
+    public int port = 5005;
+    public static string endToken = "<EOF>";
+    public FrameTransmissionProtocol frame_protocol = FrameTransmissionProtocol.AsReply;
 
     private RenderTexture transmissionRenderTexture;
     private Texture2D transmissionTexture;
@@ -107,17 +108,17 @@ public class AsynchronousSocketListener : MonoBehaviour
             if (content.IndexOf(endToken) > -1)
             {
                 string[] splitContent = content.Split(new string[] { endToken }, StringSplitOptions.RemoveEmptyEntries);
-                if (splitContent.Length > 1)
+                if (splitContent.Length >= 1)
                 {
-                    for (int i = 0; i < splitContent.Length - 1; i++)
-                        ReceivedData(handler, splitContent[i]);
-                    state.sb.Remove(0, state.sb.Length);
-                    if (splitContent.Length > 1)
-                        state.sb.Append(splitContent[splitContent.Length - 1]);
-                }
-                else
-                {
-                    ReceivedData(handler, splitContent[0]);
+                    for (int i = 0; i < splitContent.Length; i++)
+                    {
+                        if(i < splitContent.Length - 1 || content.EndsWith(endToken))
+                        {
+                            state.sb.Remove(0, splitContent[i].Length + endToken.Length);
+                            string tmp = state.sb.ToString();
+                            ReceivedData(handler, splitContent[i]);
+                        }
+                    }
                 }
             }
         }
@@ -125,6 +126,7 @@ public class AsynchronousSocketListener : MonoBehaviour
 
     private void ReceivedData(Socket handler, string content)
     {
+        Message m = new Message(content);
         // All the data has been read from the   
         // client. Display it on the console.  
         //Debug.Log("Read " + content.Length + " bytes from socket. \n Data : " + content);
@@ -136,7 +138,7 @@ public class AsynchronousSocketListener : MonoBehaviour
         }
         else if(frame_protocol == FrameTransmissionProtocol.OnRequest)
         {
-            Message m = new Message(content);
+            
             if(m.Type == "ImageRequest")
             {
                 //Debug.Log("Frame Protocol is OnRequest and ImageRequest type received, Sending Reply Frame");
@@ -144,6 +146,45 @@ public class AsynchronousSocketListener : MonoBehaviour
                 SendFrame(handler);
             }
         }
+        Debug.Log("Processing Message Type=" + (m.Type==null?"null":m.Type) + ",Value=" + (m.Value==null?"null":m.Value.ToString()));
+        if (m.Type == "Scene")
+        {
+            SceneManager.LoadScene((int)m.Value);
+        }
+        else if (m.Type == "PlayerPrefsS")
+        {
+            string[] vals = (string[])m.Value;
+            PlayerPrefs.SetString(vals[0], vals[1]);
+        }
+        else if (m.Type == "PlayerPrefsF")
+        {
+            string[] vals = (string[])m.Value;
+            PlayerPrefs.SetFloat(vals[0], float.Parse(vals[1]));
+        }
+        else if (m.Type == "PlayerPrefsI")
+        {
+            string[] vals = (string[])m.Value;
+            PlayerPrefs.SetInt(vals[0], int.Parse(vals[1]));
+        }
+        else if (m.Type == "Key")
+        {
+            if(m.Value != null)
+                //Execute simulate keystroke
+                WindowsInput.InputSimulator.SimulateKeyDown((VirtualKeyCode)m.Value);
+        }
+        else if (m.Type == "Reward")
+        {
+            byte[] typeData = Encoding.UTF8.GetBytes("Reward");
+            byte[] EOF = Encoding.UTF8.GetBytes(endToken);
+            Send(handler, typeData);
+            Send(handler, GetRewardFeedback());
+            Send(handler, EOF);
+        }
+    }
+
+    public byte[] GetRewardFeedback()
+    {
+        throw new NotImplementedException();
     }
 
     public void SendFrame(Socket handler)
@@ -169,9 +210,53 @@ public class AsynchronousSocketListener : MonoBehaviour
 
         public Message(string data)
         {
-            if(data.StartsWith("ImageRequest"))
+            if (data.StartsWith("ImageRequest"))
             {
                 Type = "ImageRequest";
+                Value = null;
+            }
+            else if (data.StartsWith("Scene"))
+            {
+                Type = "Scene";
+                try
+                {
+                    Value = int.Parse(data.Replace("Scene", "").Replace(AsynchronousSocketListener.endToken, "").Trim());
+                }
+                catch (Exception)
+                {
+                    Value = null;
+                }
+            }
+            else if (data.StartsWith("Key"))
+            {
+                Type = "Key";
+                try
+                {
+                    Value = (VirtualKeyCode)System.Enum.Parse(typeof(VirtualKeyCode), data.Replace("Key", "").Replace(AsynchronousSocketListener.endToken, "").Trim());
+                }
+                catch (Exception)
+                {
+                    Value = null;
+                }
+            }
+            else if (data.StartsWith("PlayerPrefsS"))
+            {
+                Type = "PlayerPrefsS";
+                Value = data.Replace("PlayerPrefsS", "").Replace(AsynchronousSocketListener.endToken, "").Split(new char[] { ',' });
+            }
+            else if (data.StartsWith("PlayerPrefsF"))
+            {
+                Type = "PlayerPrefsF";
+                Value = data.Replace("PlayerPrefsF", "").Replace(AsynchronousSocketListener.endToken, "").Split(new char[] { ',' });
+            }
+            else if (data.StartsWith("PlayerPrefsI"))
+            {
+                Type = "PlayerPrefsI";
+                Value = data.Replace("PlayerPrefsI", "").Replace(AsynchronousSocketListener.endToken, "").Split(new char[] { ',' });
+            }
+            else if (data.StartsWith("Reward"))
+            {
+                Type = "Reward";
                 Value = null;
             }
         }

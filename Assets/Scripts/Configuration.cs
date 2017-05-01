@@ -37,6 +37,10 @@ public class Configuration : System.Object {
         int n = TrialStrings.Length;
 
         InitializeDataArrays(n);
+
+        enableTCP = false;
+        port = 5005;
+        frameMode = 1;
     }
 
     public Configuration(string path) : base()
@@ -56,6 +60,8 @@ public class Configuration : System.Object {
             //Read the global settings
 
             enableTCP = parser.ReadValue("Global", "EnableTCP", 0) != 0;
+            port = parser.ReadValue("Global", "Port", 5005);
+            frameMode = parser.ReadValue("Global", "FrameMode", 1);
 
             //Popualte the data arrays with defaults
             int n = TrialStrings.Length;
@@ -201,6 +207,8 @@ public class Configuration : System.Object {
     }
 
     private bool enableTCP;
+    private int port;
+    private int frameMode;
 
     private string[] trialStrings;
 
@@ -399,6 +407,32 @@ public class Configuration : System.Object {
         set
         {
             enableTCP = value;
+        }
+    }
+
+    public int Port
+    {
+        get
+        {
+            return port;
+        }
+
+        set
+        {
+            port = value;
+        }
+    }
+
+    public int FrameMode
+    {
+        get
+        {
+            return frameMode;
+        }
+
+        set
+        {
+            frameMode = value;
         }
     }
 }
