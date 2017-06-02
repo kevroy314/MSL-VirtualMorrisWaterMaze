@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class TrialTimer : MonoBehaviour {
     public TrialConfigurationLoader configLoader;
@@ -42,5 +43,8 @@ public class TrialTimer : MonoBehaviour {
         done = true;
         configLoader.NextIteration();
         pause.resetOnKey = true;
+        Debug.Log("Restarting Scene");
+        CameraFade.SetScreenOverlayColor(Color.black);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
