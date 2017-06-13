@@ -42,6 +42,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+        public bool backwardMovementEnabled;
+        public bool mouseRotationEnabled = false;
         public void DisableWalking()
         {
             m_WalkSpeed = 0f;
@@ -115,10 +117,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
                                m_CharacterController.height/2f, ~0, QueryTriggerInteraction.Ignore);
             desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
 
-            m_MoveDir.x = desiredMove.x*speed;
-            m_MoveDir.z = desiredMove.z*speed;
-
-
+            m_MoveDir.z = desiredMove.z * speed;
+                
             if (m_CharacterController.isGrounded)
             {
                 m_MoveDir.y = -m_StickToGroundForce;
@@ -216,6 +216,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
             // Read input
             float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            if (!backwardMovementEnabled)
+                vertical = Mathf.Clamp(vertical, 0, float.MaxValue);
 
             bool waswalking = m_IsWalking;
 
@@ -246,7 +248,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void RotateView()
         {
-            m_MouseLook.LookRotation (transform, m_Camera.transform);
+            if (mouseRotationEnabled)
+                m_MouseLook.LookRotation(transform, m_Camera.transform);
         }
 
 

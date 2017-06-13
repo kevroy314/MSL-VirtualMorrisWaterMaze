@@ -18,6 +18,7 @@ public class TrialConfigurationLoader : MonoBehaviour {
     public GameObject flags;
     public GameObject hills;
     public TrialTimer timer;
+    public GameObject logger;
 
     // Use this for initialization
     void Start () {
@@ -58,6 +59,8 @@ public class TrialConfigurationLoader : MonoBehaviour {
             return;
         }
 
+        logger.SetActive(true);
+
         platform.transform.position = new Vector3(c.PlatformPositions[trial][iteration].x, platform.transform.position.y, c.PlatformPositions[trial][iteration].y);
         player.transform.position = new Vector3(c.PlayerStartPositions[trial][iteration].x, player.transform.position.y, c.PlayerStartPositions[trial][iteration].y);
         platform.transform.rotation = c.PlayerStartOrientations[trial][iteration];
@@ -78,7 +81,7 @@ public class TrialConfigurationLoader : MonoBehaviour {
 
         player.GetComponentInChildren<AudioListener>().enabled = c.SoundEffectsEnabled[trial];
 
-        player.GetComponent<FirstPersonController>().SetWalkSpeed(c.MovementSpeeds[trial]);
+        player.GetComponent<AugmentedController>().SetWalkSpeed(c.MovementSpeeds[trial]);
 }
 
     public Configuration getActiveConfiguration()
