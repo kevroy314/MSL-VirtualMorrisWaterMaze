@@ -3,6 +3,7 @@ using System.Collections;
 
 public class TrialTimer : MonoBehaviour {
     public TrialConfigurationLoader configLoader;
+    public BinaryLogger logger;
     public PauseScreen pause;
     private float startTime;
     private float pauseTime;
@@ -40,6 +41,7 @@ public class TrialTimer : MonoBehaviour {
         pause.Pause = true;
         pause.pauseKey = KeyCode.Space;
         done = true;
+        logger.logging = false;
         configLoader.NextIteration();
         pause.resetOnKey = true;
     }
